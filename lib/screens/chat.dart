@@ -59,7 +59,8 @@ class _ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<_ChatScreen> {
-  _ChatScreenState({Key key, @required this.peerId, @required this.peerAvatar});
+  _ChatScreenState(
+      {Key key, @required this.peerId, @required this.peerAvatar});
 
   String peerId;
   String peerAvatar;
@@ -132,13 +133,15 @@ class _ChatScreenState extends State<_ChatScreen> {
 
   Future uploadFile() async {
     String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
+    Reference reference = FirebaseStorage.instance.ref().child(fileName);
 
-    File compressedFile = await FlutterNativeImage.compressImage(imageFile.path,
-        quality: 80, percentage: 90);
+    File compressedFile = await FlutterNativeImage.compressImage(
+        imageFile.path,
+        quality: 80,
+        percentage: 90);
 
-    StorageUploadTask uploadTask = reference.putFile(compressedFile);
-    StorageTaskSnapshot storageTaskSnapshot = await uploadTask.onComplete;
+    UploadTask uploadTask = reference.putFile(compressedFile);
+    TaskSnapshot storageTaskSnapshot = await uploadTask;
     storageTaskSnapshot.ref.getDownloadURL().then((downloadUrl) {
       imageUrl = downloadUrl;
       setState(() {
@@ -165,12 +168,13 @@ class _ChatScreenState extends State<_ChatScreen> {
           .doc(DateTime.now().millisecondsSinceEpoch.toString());
 
       FirebaseFirestore.instance.runTransaction((transaction) async {
-        await transaction.set(
+        transaction.set(
           documentReference,
           {
             'idFrom': id,
             'idTo': peerId,
-            'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+            'timestamp':
+                DateTime.now().millisecondsSinceEpoch.toString(),
             'content': content,
             'type': type
           },
@@ -196,8 +200,12 @@ class _ChatScreenState extends State<_ChatScreen> {
           Column(
             children: <Widget>[
               // List of messages
-              ChatWidget.widgetChatBuildListMessage(groupChatId, listMessage,
-                  widget.currentUserId, peerAvatar, listScrollController),
+              ChatWidget.widgetChatBuildListMessage(
+                  groupChatId,
+                  listMessage,
+                  widget.currentUserId,
+                  peerAvatar,
+                  listScrollController),
 
               // Input content
               buildInput(),
@@ -218,7 +226,8 @@ class _ChatScreenState extends State<_ChatScreen> {
           ? Container(
               child: Center(
                 child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(themeColor)),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(themeColor)),
               ),
               color: Colors.white.withOpacity(0.8),
             )
@@ -274,7 +283,8 @@ class _ChatScreenState extends State<_ChatScreen> {
               margin: new EdgeInsets.symmetric(horizontal: 8.0),
               child: new IconButton(
                 icon: new Icon(Icons.send),
-                onPressed: () => onSendMessage(textEditingController.text, 0),
+                onPressed: () =>
+                    onSendMessage(textEditingController.text, 0),
                 color: primaryColor,
               ),
             ),
@@ -285,8 +295,8 @@ class _ChatScreenState extends State<_ChatScreen> {
       width: double.infinity,
       height: 50.0,
       decoration: new BoxDecoration(
-          border:
-              new Border(top: new BorderSide(color: greyColor2, width: 0.5)),
+          border: new Border(
+              top: new BorderSide(color: greyColor2, width: 0.5)),
           color: Colors.white),
     );
   }

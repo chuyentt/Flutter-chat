@@ -15,7 +15,7 @@ class ChatDBFireStore {
         .collection(getDocName())
         .where('userId', isEqualTo: logInUser.uid)
         .get();
-    final List<DocumentSnapshot> documents = result.documents;
+    final List<DocumentSnapshot> documents = result.docs;
     if (documents.length == 0) {
       // Update data to server if new user
       await saveNewUser(logInUser);
@@ -25,7 +25,10 @@ class ChatDBFireStore {
   static saveNewUser(User logInUser) {
     List<String> friendList = [];
 
-    FirebaseFirestore.instance.collection(getDocName()).doc(logInUser.uid).set({
+    FirebaseFirestore.instance
+        .collection(getDocName())
+        .doc(logInUser.uid)
+        .set({
       'nickname': logInUser.displayName,
       'photoUrl': logInUser.photoURL,
       'userId': logInUser.uid,
